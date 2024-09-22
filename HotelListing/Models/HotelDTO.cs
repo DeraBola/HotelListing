@@ -22,7 +22,6 @@ namespace HotelListing.Models
 	public class HotelDTO : CreateHotelDTO
 	{
 		public int Id { get; set; }
-		public Country ? Country { get; set; }
 	 
 	}
 }
