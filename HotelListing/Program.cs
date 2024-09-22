@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using HotelListing.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,25 @@ try
 		.MinimumLevel.Debug()
 		.WriteTo.File("log/hotelListingLogs.txt", rollingInterval: RollingInterval.Day)
 		.CreateLogger();
+
+	// Add DbContext for SQL connection
+
+	builder.Services.AddDbContext<DataBaseContext>(option =>
+	{
+		option.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
+	});
+
+	// Add CORS policy
+	builder.Services.AddCors(options =>
+	{
+		options.AddPolicy("AllowSpecificOrigins",
+			policy =>
+			{
+				policy.AllowAnyOrigin()
+					.AllowAnyHeader()
+					.AllowAnyMethod();
+			});
+	});
 
 	builder.Host.UseSerilog();
 
@@ -27,6 +48,7 @@ try
 	}
 
 	app.UseHttpsRedirection();
+	app.UseCors("AllowSpecificOrigins");
 	app.UseAuthorization();
 	app.MapControllers();
 
