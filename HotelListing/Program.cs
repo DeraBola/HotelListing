@@ -1,5 +1,8 @@
 using System.Linq.Expressions;
+using HotelListing.Configurations;
 using HotelListing.Data;
+using HotelListing.IRepository;
+using HotelListing.Repository;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -13,12 +16,19 @@ try
 		.WriteTo.File("log/hotelListingLogs.txt", rollingInterval: RollingInterval.Day)
 		.CreateLogger();
 
-	// Add DbContext for SQL connection
+	builder.Services.AddAutoMapper(typeof(MapperInitializer));
 
+	builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+	// Add DbContext for SQL connection
 	builder.Services.AddDbContext<DataBaseContext>(option =>
 	{
 		option.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
 	});
+
+	builder.Services.AddControllers().AddNewtonsoftJson(op =>
+	op.SerializerSettings.ReferenceLoopHandling =
+	Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 	// Add CORS policy
 	builder.Services.AddCors(options =>
