@@ -17,6 +17,7 @@ namespace HotelListing.Configurations
 	.ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country)) // Include Country mapping
 	.ReverseMap();
 			CreateMap<Hotel, CreateHotelDTO>().ReverseMap();
+			CreateMap<ApiUser, UserDTO>().ReverseMap();
 		}
 	}
 }

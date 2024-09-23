@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using HotelListing;
 using HotelListing.Configurations;
 using HotelListing.Data;
 using HotelListing.IRepository;
@@ -47,6 +48,8 @@ try
 	builder.Services.AddControllers();
 	builder.Services.AddEndpointsApiExplorer();
 	builder.Services.AddSwaggerGen();
+	builder.Services.AddAuthentication();
+	builder.Services.ConfigureIdentity();
 
 	var app = builder.Build();
 
