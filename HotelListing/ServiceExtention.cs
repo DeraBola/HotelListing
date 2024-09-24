@@ -35,11 +35,12 @@ namespace HotelListing
 						ValidateAudience = true,
 						ValidateLifetime = true,
 						ValidateIssuerSigningKey = true,
-						ValidIssuer = jwtSettings.GetSection("Issuer").Value,
-						ValidAudience = jwtSettings["Audience"],
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key))
+						ValidIssuer = Configuration["Jwt:Issuer"],
+						ValidAudience = Configuration["Jwt:Audience"],
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
 					};
 				});
+			services.AddAuthorization();
 		}
 	}
 }
