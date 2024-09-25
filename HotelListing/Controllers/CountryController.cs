@@ -55,9 +55,9 @@ namespace HotelListing.Controllers
 			}
 		}
 
-		[Authorize(Roles = "Administrator")]
+		[Authorize]
 		[HttpPost]
-		public async Task<IActionResult> CreateCountry([FromBody] CountryDTO countryDTO)
+		public async Task<IActionResult> CreateCountry([FromBody] CreateCountryDTO countryCreateDTO)
 		{
 
 			if (!ModelState.IsValid)
@@ -68,7 +68,7 @@ namespace HotelListing.Controllers
 
 			try
 			{
-				var country = _mapper.Map<Country>(countryDTO);
+				var country = _mapper.Map<Country>(countryCreateDTO);
 				await _unitOfWork.Countries.Insert(country);
 				await _unitOfWork.Save();
 				return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
@@ -77,6 +77,34 @@ namespace HotelListing.Controllers
 			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(CreateCountry)}");
+				return StatusCode(500, "Internal Server Error. Please try again later");
+			}
+		}
+
+		[HttpPut]
+		public async Task<IActionResult> UpdateCountry(int id, [FromBody] UpdateCountryDTO updateCountry)
+		{
+			if (!ModelState.IsValid || id < 1)
+			{
+				_logger.LogError($"Invalid UPDATE attempt in {nameof(UpdateCountry)}");
+				return BadRequest(ModelState);
+			}
+			try
+			{
+				var country = await _unitOfWork.Countries.Get(q => q.Id == id);
+				if (country == null)
+				{
+					_logger.LogError($"Hotel with ID {id} not found for UPDATE in {nameof(UpdateCountry)}");
+					return NotFound($"Hotel with ID {id} not found.");
+				}
+				_mapper.Map(updateCountry, country);
+				_unitOfWork.Countries.Update(country);
+				await _unitOfWork.Save();
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, $"Something went wrong in the {nameof(UpdateCountry)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
 			}
 		}

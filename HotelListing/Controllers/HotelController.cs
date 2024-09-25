@@ -83,7 +83,7 @@ namespace HotelListing.Controllers
 
 
 		[HttpPut]
-		public async Task<IActionResult> UpdateHotel(int id, [FromBody] UpdateHotelDTO updateoHotelDTO)
+		public async Task<IActionResult> UpdateHotel(int id, [FromBody] UpdateHotelDTO updateHotelDTO)
 		{
 			if(!ModelState.IsValid || id < 1)
 			{
@@ -98,7 +98,7 @@ namespace HotelListing.Controllers
 					_logger.LogError($"Hotel with ID {id} not found for UPDATE in {nameof(UpdateHotel)}");
 					return NotFound($"Hotel with ID {id} not found.");
 				}
-				_mapper.Map(updateoHotelDTO, hotel);
+				_mapper.Map(updateHotelDTO, hotel);
 				_unitOfWork.Hotels.Update(hotel);
 				await _unitOfWork.Save();
 				return NoContent();
@@ -106,6 +106,36 @@ namespace HotelListing.Controllers
 			catch(Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(UpdateHotel)}");
+				return StatusCode(500, "Internal Server Error. Please try again later");
+			}
+		}
+
+		[HttpDelete("{id:int}", Name = "DeleteHotel")]
+		public async Task<IActionResult> DeleteHotel(int id)
+		{
+
+			if ( id < 1)
+			{
+				_logger.LogError($"Invalid Delete attempt in {nameof(DeleteHotel)}");
+				return BadRequest(ModelState);
+			}
+			try
+			{
+				// Correct the includes if necessary (e.g., "Country" instead of "Hotel")
+				var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id, new List<string> { "Country" });
+
+				if (hotel == null)
+				{
+					_logger.LogError($"Hotel with ID {id} not found for Delete in {nameof(DeleteHotel)}");
+					return NotFound($"Hotel with ID {id} not found.");
+				}
+				await _unitOfWork.Hotels.Delete(id);
+				await _unitOfWork.Save();	
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, $"Something went wrong in the {nameof(DeleteHotel)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
 			}
 		}
