@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HotelListing.Data;
 using HotelListing.IRepository;
 using HotelListing.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers
 {
-	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class CountryController : ControllerBase
@@ -39,7 +39,7 @@ namespace HotelListing.Controllers
 			}
 		}
 
-		[HttpGet("{id:int}")]
+		[HttpGet("{id:int}", Name = "GetCountry")]
 		public async Task<IActionResult> GetCountry(int id)
 		{
 			try
@@ -51,6 +51,32 @@ namespace HotelListing.Controllers
 			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(GetCountry)}");
+				return StatusCode(500, "Internal Server Error. Please try again later");
+			}
+		}
+
+		[Authorize(Roles = "Administrator")]
+		[HttpPost]
+		public async Task<IActionResult> CreateCountry([FromBody] CountryDTO countryDTO)
+		{
+
+			if (!ModelState.IsValid)
+			{
+				_logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
+				return BadRequest(ModelState);
+			}
+
+			try
+			{
+				var country = _mapper.Map<Country>(countryDTO);
+				await _unitOfWork.Countries.Insert(country);
+				await _unitOfWork.Save();
+				return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
+
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, $"Something went wrong in the {nameof(CreateCountry)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
 			}
 		}
