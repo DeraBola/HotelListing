@@ -23,7 +23,8 @@ namespace HotelListing.Controllers
 			_mapper = mapper;
 		}
 
-		[HttpGet]
+		// Gets all countries
+		[HttpGet("all")]
 		public async Task<IActionResult> GetCountries()
 		{
 			try
@@ -39,6 +40,23 @@ namespace HotelListing.Controllers
 			}
 		}
 
+		// Gets paginated countries
+		[HttpGet("paginated")]
+		public async Task<IActionResult> GetPaginatedCountry([FromQuery] RequestParams requestParams)
+		{
+			try
+			{
+				var result = await _unitOfWork.Countries.GetAllPaginated(requestParams);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, $"Something went wrong in the {nameof(GetPaginatedCountry)}");
+				return StatusCode(500, "Internal Server Error. Please try again later");
+			}
+		}
+
+		// Gets a country by ID
 		[HttpGet("{id:int}", Name = "GetCountry")]
 		public async Task<IActionResult> GetCountry(int id)
 		{
@@ -105,6 +123,35 @@ namespace HotelListing.Controllers
 			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(UpdateCountry)}");
+				return StatusCode(500, "Internal Server Error. Please try again later");
+			}
+		}
+
+		[HttpDelete("{id:int}", Name = "DeleteCountry")]
+		public async Task<IActionResult> DeleteCountry(int id)
+		{
+
+			if (id < 1)
+			{
+				_logger.LogError($"Invalid Delete attempt in {nameof(DeleteCountry)}");
+				return BadRequest(ModelState);
+			}
+			try
+			{
+				var country = await _unitOfWork.Countries.Get(q => q.Id == id);
+
+				if (country == null)
+				{
+					_logger.LogError($"Hotel with ID {id} not found for Delete in {nameof(DeleteCountry)}");
+					return NotFound($"Hotel with ID {id} not found.");
+				}
+				await _unitOfWork.Countries.Delete(id);
+				await _unitOfWork.Save();
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, $"Something went wrong in the {nameof(DeleteCountry)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
 			}
 		}

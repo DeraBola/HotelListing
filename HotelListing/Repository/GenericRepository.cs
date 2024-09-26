@@ -1,7 +1,11 @@
 ﻿using System.Linq.Expressions;
 using HotelListing.Data;
 using HotelListing.IRepository;
+using HotelListing.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using X.PagedList;
+using X.PagedList.Mvc.Core;
 
 namespace HotelListing.Repository
 {
@@ -44,9 +48,26 @@ namespace HotelListing.Repository
 			return await query.AsNoTracking().FirstOrDefaultAsync(expression);
 		}
 
+		/* public async Task<IPagedList<T>> GetPagedList(RequestParams requestParams, List<string>? includes = null)
+		{
+			IQueryable<T> query = _db;
+
+			if (includes != null)
+			{
+				foreach (var includeProperty in includes)
+				{
+					query = query.Include(includeProperty);
+				}
+			}
+			return await query.AsNoTracking().ToPagedListAsync(requestParams.pageNumber, requestParams.pageSize);
+
+		}
+		*/
+
 		public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>>? expression = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, List<string>? includes = null)
 		{
 			IQueryable<T> query = _db;
+
 			if (expression != null)
 			{
 				query = query.Where(expression);
@@ -65,6 +86,31 @@ namespace HotelListing.Repository
 
 			return await query.AsNoTracking().ToListAsync();
 		}
+
+		public async Task<PaginationModel<T>> GetAllPaginated(RequestParams requestParams, List<string>? includes = null)
+		{
+			IQueryable<T> query = _db;
+
+			if (includes != null)
+			{
+				foreach (var includeProperty in includes)
+				{
+					query = query.Include(includeProperty);
+				}
+			}
+
+			// Get total item count
+			var totalItems = await query.CountAsync();
+
+			// Fetch the paginated items
+			var items = await query
+				.Skip((requestParams.pageNumber - 1) * requestParams.pageSize)
+				.Take(requestParams.pageSize)
+				.ToListAsync();
+
+			return new PaginationModel<T>(items, totalItems, requestParams.pageNumber, requestParams.pageSize);
+		}
+
 
 		public async Task Insert(T entity)
 		{
