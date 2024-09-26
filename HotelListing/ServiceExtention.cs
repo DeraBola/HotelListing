@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Diagnostics;
+using System.Net;
+using Azure;
+using HotelListing.Models;
 
 namespace HotelListing
 {
@@ -42,6 +46,28 @@ namespace HotelListing
 				});
 			services.AddAuthorization();
 		}
+	
+		public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+		{
+			app.UseExceptionHandler(error => {
+				error.Run(async context => {
+					context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+					context.Response.ContentType = "application/json";
+					var contextFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+					if (contextFeature != null)
+					{
+						Serilog.Log.Error($"Something went wrong in {contextFeature.Error}");
+						await context.Response.WriteAsync(new Error
+						{
+							StatusCode =  context.Response.StatusCode,
+							Message  = "Internal Server Error. Please try again later."
+
+						}.ToString());
+					}
+				});
+			});
+		}
+	
 	}
 }
 

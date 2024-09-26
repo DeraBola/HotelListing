@@ -95,7 +95,7 @@ try
 		app.UseSwagger();
 		app.UseSwaggerUI();
 	}
-
+	app.ConfigureExceptionHandler();
 	app.UseHttpsRedirection();
 	app.UseCors("AllowSpecificOrigins");
 	app.UseAuthentication();
