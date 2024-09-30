@@ -29,6 +29,7 @@ try
 	builder.Services.AddEndpointsApiExplorer();
 	builder.Services.ConfigureIdentity();
 	builder.Services.ConfigureJWT(builder.Configuration);
+	builder.Services.ConfigureVersioning();
 
 	// Add DbContext for SQL connection
 	builder.Services.AddDbContext<DataBaseContext>(option =>

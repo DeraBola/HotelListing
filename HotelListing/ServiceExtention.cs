@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 using Azure;
 using HotelListing.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing
 {
@@ -46,11 +47,13 @@ namespace HotelListing
 				});
 			services.AddAuthorization();
 		}
-	
+
 		public static void ConfigureExceptionHandler(this IApplicationBuilder app)
 		{
-			app.UseExceptionHandler(error => {
-				error.Run(async context => {
+			app.UseExceptionHandler(error =>
+			{
+				error.Run(async context =>
+				{
 					context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 					context.Response.ContentType = "application/json";
 					var contextFeature = context.Features.Get<IExceptionHandlerPathFeature>();
@@ -59,15 +62,24 @@ namespace HotelListing
 						Serilog.Log.Error($"Something went wrong in {contextFeature.Error}");
 						await context.Response.WriteAsync(new Error
 						{
-							StatusCode =  context.Response.StatusCode,
-							Message  = "Internal Server Error. Please try again later."
+							StatusCode = context.Response.StatusCode,
+							Message = "Internal Server Error. Please try again later."
 
 						}.ToString());
 					}
 				});
 			});
 		}
-	
+
+		public static void ConfigureVersioning(this IServiceCollection services)
+		{
+			services.AddApiVersioning(opt =>
+			{
+				opt.ReportApiVersions = true;
+				opt.AssumeDefaultVersionWhenUnspecified = true;
+				opt.DefaultApiVersion = new ApiVersion(1, 0);
+			});
+		}
 	}
 }
 
