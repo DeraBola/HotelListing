@@ -8,6 +8,7 @@ using System.Net;
 using Azure;
 using HotelListing.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace HotelListing
 {
@@ -78,6 +79,7 @@ namespace HotelListing
 				opt.ReportApiVersions = true;
 				opt.AssumeDefaultVersionWhenUnspecified = true;
 				opt.DefaultApiVersion = new ApiVersion(1, 0);
+			//	opt.ApiVersionReader = new HeaderApiVersionReader("api-version");
 			});
 		}
 	}

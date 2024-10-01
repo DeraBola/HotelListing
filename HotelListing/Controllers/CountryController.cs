@@ -23,7 +23,9 @@ namespace HotelListing.Controllers
 			_mapper = mapper;
 		}
 
+
 		// Gets all countries
+		[ResponseCache(Duration = 60)]
 		[HttpGet("all")]
 		public async Task<IActionResult> GetCountries()
 		{
