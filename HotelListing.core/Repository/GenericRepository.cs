@@ -1,15 +1,15 @@
 ﻿using System.Linq.Expressions;
+using HotelListing.core.IRepository;
 using HotelListing.Data;
-using HotelListing.IRepository;
 using HotelListing.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using X.PagedList;
 using X.PagedList.Mvc.Core;
 
-namespace HotelListing.Repository
+namespace HotelListing.core.Repository
 {
-	public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
 	{
 
 		private readonly DataBaseContext _context;

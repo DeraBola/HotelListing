@@ -1,9 +1,8 @@
-﻿using HotelListing.Data;
-using HotelListing.IRepository;
+﻿using HotelListing.core.IRepository;
 
-namespace HotelListing.Repository
+namespace HotelListing.core.Repository
 {
-	public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
 	{
 		private readonly DataBaseContext _context;
 		private IGenericRepository<Country> ? _countryRepository;

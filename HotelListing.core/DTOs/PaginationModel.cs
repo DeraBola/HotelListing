@@ -1,4 +1,4 @@
-﻿namespace HotelListing.Models
+﻿namespace HotelListing.core.Models
 {
 	public class PaginationModel<T>
 	{

@@ -1,8 +1,6 @@
-﻿using HotelListing.Data;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace HotelListing.Models
+namespace HotelListing.Core.DTOs
 {
 	public class CreateHotelDTO
 	{

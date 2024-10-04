@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HotelListing.Services
+namespace HotelListing.core.Services
 {
 	public class AuthManager : IAuthManager
 	{

@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
+using HotelListing.core.IRepository;
+using HotelListing.Core.DTOs;
 using HotelListing.Data;
-using HotelListing.IRepository;
-using HotelListing.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers
@@ -17,8 +16,8 @@ namespace HotelListing.Controllers
 		private readonly ILogger<HotelController> _logger;
 		private readonly IMapper _mapper;
 
-        public HotelController(IUnitOfWork unitOfWork, ILogger<HotelController> logger, IMapper mapper)
-        {
+		public HotelController(IUnitOfWork unitOfWork, ILogger<HotelController> logger, IMapper mapper)
+		{
 			_unitOfWork = unitOfWork;
 			_logger = logger;
 			_mapper = mapper;
@@ -69,12 +68,13 @@ namespace HotelListing.Controllers
 
 			try
 			{
-				var hotel =_mapper.Map<Hotel>(hotelDTO);
+				var hotel = _mapper.Map<Hotel>(hotelDTO);
 				await _unitOfWork.Hotels.Insert(hotel);
 				await _unitOfWork.Save();
-				return CreatedAtRoute("GetHotel", new {id =  hotel.Id}, hotel);
+				return CreatedAtRoute("GetHotel", new { id = hotel.Id }, hotel);
 
-			}catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(CreateHotel)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
@@ -85,7 +85,7 @@ namespace HotelListing.Controllers
 		[HttpPut]
 		public async Task<IActionResult> UpdateHotel(int id, [FromBody] UpdateHotelDTO updateHotelDTO)
 		{
-			if(!ModelState.IsValid || id < 1)
+			if (!ModelState.IsValid || id < 1)
 			{
 				_logger.LogError($"Invalid UPDATE attempt in {nameof(UpdateHotel)}");
 				return BadRequest(ModelState);
@@ -93,7 +93,7 @@ namespace HotelListing.Controllers
 			try
 			{
 				var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id);
-				if(hotel == null)
+				if (hotel == null)
 				{
 					_logger.LogError($"Hotel with ID {id} not found for UPDATE in {nameof(UpdateHotel)}");
 					return NotFound($"Hotel with ID {id} not found.");
@@ -103,7 +103,7 @@ namespace HotelListing.Controllers
 				await _unitOfWork.Save();
 				return NoContent();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(UpdateHotel)}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
@@ -114,7 +114,7 @@ namespace HotelListing.Controllers
 		public async Task<IActionResult> DeleteHotel(int id)
 		{
 
-			if ( id < 1)
+			if (id < 1)
 			{
 				_logger.LogError($"Invalid Delete attempt in {nameof(DeleteHotel)}");
 				return BadRequest(ModelState);
@@ -130,7 +130,7 @@ namespace HotelListing.Controllers
 					return NotFound($"Hotel with ID {id} not found.");
 				}
 				await _unitOfWork.Hotels.Delete(id);
-				await _unitOfWork.Save();	
+				await _unitOfWork.Save();
 				return NoContent();
 			}
 			catch (Exception ex)

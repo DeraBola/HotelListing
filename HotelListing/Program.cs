@@ -1,12 +1,8 @@
-using System.Linq.Expressions;
-using AspNetCoreRateLimit;
 using HotelListing;
-using HotelListing.Configurations;
+using HotelListing.core.IRepository;
+using HotelListing.core.Repository;
+using HotelListing.core.Services;
 using HotelListing.Data;
-using HotelListing.IRepository;
-using HotelListing.Repository;
-using HotelListing.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -36,6 +32,7 @@ try
 	builder.Services.ConfigureIdentity();
 	builder.Services.ConfigureJWT(builder.Configuration);
 	builder.Services.ConfigureVersioning();
+	builder.Services.ConfigureAutoMapper();
 
 	// Add DbContext for SQL connection
 	builder.Services.AddDbContext<DataBaseContext>(option =>

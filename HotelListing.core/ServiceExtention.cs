@@ -1,16 +1,19 @@
-﻿using HotelListing.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+﻿using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Diagnostics;
-using System.Net;
-using Azure;
-using HotelListing.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Marvin.Cache.Headers;
 using AspNetCoreRateLimit;
+using HotelListing.core.Configurations;
+using HotelListing.Data;
+using Marvin.Cache.Headers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelListing
 {
@@ -99,6 +102,14 @@ namespace HotelListing
 					validationOpt.MustRevalidate = true;
 				});
 		}
+		
+		public static void ConfigureAutoMapper(this IServiceCollection services)
+		{
+			// services.AddAutoMapper(typeof(MapperInitializer));
+			services.AddAutoMapper(Assembly.GetExecutingAssembly());
+			
+		}
+
 
 		public static void ConfigureRateLimiting(this IServiceCollection services)
 		{
@@ -111,12 +122,12 @@ namespace HotelListing
 		Period = "5s"
 	}
 				};
-			services.Configure<IpRateLimitOptions>(opt =>
+			services.Configure<IpRateLimitOptibons>(opt =>
 			{
 				opt.GeneralRules = rateLimitRules;
 			});
 			services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-			services.AddSingleton<IIpPolicyStore,  MemoryCacheIpPolicyStore>();
+			services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
 			services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 		}
 

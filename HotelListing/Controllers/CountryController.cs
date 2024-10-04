@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
+using HotelListing.core.IRepository;
+using HotelListing.Core.DTOs;
 using HotelListing.Data;
-using HotelListing.IRepository;
 using HotelListing.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers
@@ -82,10 +82,10 @@ namespace HotelListing.Controllers
 				return BadRequest(ModelState);
 			}
 
-				var country = _mapper.Map<Country>(countryCreateDTO);
-				await _unitOfWork.Countries.Insert(country);
-				await _unitOfWork.Save();
-				return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
+			var country = _mapper.Map<Country>(countryCreateDTO);
+			await _unitOfWork.Countries.Insert(country);
+			await _unitOfWork.Save();
+			return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
 		}
 
 		[HttpPut]
@@ -125,16 +125,16 @@ namespace HotelListing.Controllers
 				_logger.LogError($"Invalid Delete attempt in {nameof(DeleteCountry)}");
 				return BadRequest(ModelState);
 			}
-				var country = await _unitOfWork.Countries.Get(q => q.Id == id);
+			var country = await _unitOfWork.Countries.Get(q => q.Id == id);
 
-				if (country == null)
-				{
-					_logger.LogError($"Hotel with ID {id} not found for Delete in {nameof(DeleteCountry)}");
-					return NotFound($"Hotel with ID {id} not found.");
-				}
-				await _unitOfWork.Countries.Delete(id);
-				await _unitOfWork.Save();
-				return NoContent();
+			if (country == null)
+			{
+				_logger.LogError($"Hotel with ID {id} not found for Delete in {nameof(DeleteCountry)}");
+				return NotFound($"Hotel with ID {id} not found.");
+			}
+			await _unitOfWork.Countries.Delete(id);
+			await _unitOfWork.Save();
+			return NoContent();
 		}
 	}
 }
