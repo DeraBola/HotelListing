@@ -25,7 +25,7 @@ namespace HotelListing.Controllers
 
 
 		// Gets all countries
-		[ResponseCache(Duration = 60)]
+		[ResponseCache(CacheProfileName = "120secondsDuration")]
 		[HttpGet("all")]
 		public async Task<IActionResult> GetCountries()
 		{

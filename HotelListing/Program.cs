@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using AspNetCoreRateLimit;
 using HotelListing;
 using HotelListing.Configurations;
 using HotelListing.Data;
@@ -6,6 +7,7 @@ using HotelListing.IRepository;
 using HotelListing.Repository;
 using HotelListing.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -21,7 +23,11 @@ try
 		.CreateLogger();
 
 	builder.Services.AddAutoMapper(typeof(MapperInitializer));
-
+	builder.Services.AddResponseCaching();
+	builder.Services.ConfigureHttpCacheHeaders();
+	builder.Services.AddMemoryCache();
+	// builder.Services.ConfigureRateLimiting();
+	// builder.Services.AddHttpContextAccessor();
 	builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 	builder.Services.AddScoped<IAuthManager, AuthManager>();
 	builder.Host.UseSerilog();
@@ -37,7 +43,14 @@ try
 		option.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
 	});
 
-	builder.Services.AddControllers().AddNewtonsoftJson(op =>
+	//Added Catche service
+	builder.Services.AddControllers(config =>
+	{
+		config.CacheProfiles.Add("120secondsDuration", new CacheProfile
+		{
+			Duration = 120
+		});
+	}).AddNewtonsoftJson(op =>
 	op.SerializerSettings.ReferenceLoopHandling =
 	Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -99,6 +112,9 @@ try
 	app.ConfigureExceptionHandler();
 	app.UseHttpsRedirection();
 	app.UseCors("AllowSpecificOrigins");
+	app.UseResponseCaching();
+	app.UseHttpCacheHeaders();
+	// app.UseIpRateLimiting();
 	app.UseAuthentication();
 	app.UseAuthorization();
 	app.MapControllers();
