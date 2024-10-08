@@ -1,4 +1,6 @@
-﻿using HotelListing.Data;
+﻿using AutoMapper;
+using HotelListing.Core.DTOs;
+using HotelListing.Data;
 
 namespace HotelListing.core.Configurations
 {

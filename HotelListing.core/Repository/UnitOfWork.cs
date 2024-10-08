@@ -1,4 +1,5 @@
 ﻿using HotelListing.core.IRepository;
+using HotelListing.Data;
 
 namespace HotelListing.core.Repository
 {

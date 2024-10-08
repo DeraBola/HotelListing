@@ -1,4 +1,4 @@
-﻿using HotelListing.Models;
+﻿using HotelListing.Core.DTOs;
 
 namespace HotelListing.core.Services
 {

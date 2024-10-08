@@ -1,4 +1,5 @@
 using HotelListing;
+using HotelListing.core.Configurations;
 using HotelListing.core.IRepository;
 using HotelListing.core.Repository;
 using HotelListing.core.Services;
@@ -18,7 +19,7 @@ try
 		.WriteTo.File("log/hotelListingLogs.txt", rollingInterval: RollingInterval.Day)
 		.CreateLogger();
 
-	builder.Services.AddAutoMapper(typeof(MapperInitializer));
+	//builder.Services.AddAutoMapper(typeof(MapperInitializer));
 	builder.Services.AddResponseCaching();
 	builder.Services.ConfigureHttpCacheHeaders();
 	builder.Services.AddMemoryCache();

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using HotelListing.core.IRepository;
+using HotelListing.core.Models;
 using HotelListing.Data;
-using HotelListing.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using X.PagedList;

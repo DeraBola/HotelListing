@@ -2,6 +2,7 @@
 using System.Text;
 using AspNetCoreRateLimit;
 using HotelListing.core.Configurations;
+using HotelListing.core.Models;
 using HotelListing.Data;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelListing
 {
@@ -122,7 +122,7 @@ namespace HotelListing
 		Period = "5s"
 	}
 				};
-			services.Configure<IpRateLimitOptibons>(opt =>
+			services.Configure<IpRateLimitOptions>(opt =>
 			{
 				opt.GeneralRules = rateLimitRules;
 			});
