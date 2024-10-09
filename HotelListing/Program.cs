@@ -1,11 +1,14 @@
+using HealthChecks.UI.Client;
 using HotelListing;
 using HotelListing.core.Configurations;
 using HotelListing.core.IRepository;
 using HotelListing.core.Repository;
 using HotelListing.core.Services;
 using HotelListing.Data;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -34,6 +37,20 @@ try
 	builder.Services.ConfigureJWT(builder.Configuration);
 	builder.Services.ConfigureVersioning();
 	builder.Services.ConfigureAutoMapper();
+	builder.Services.AddHealthChecksUI(setup =>
+	{
+		setup.AddHealthCheckEndpoint("Health Checks Dashboard", "/healthcheck"); // This is where the name should be configured
+	}).AddInMemoryStorage();
+
+
+	var connectionString = builder.Configuration.GetConnectionString("sqlConnection");
+
+	if (string.IsNullOrEmpty(connectionString))
+	{
+		throw new InvalidOperationException("SQL connection string is missing.");
+	}
+
+	builder.Services.AddHealthChecks().AddSqlServer(connectionString);
 
 	// Add DbContext for SQL connection
 	builder.Services.AddDbContext<DataBaseContext>(option =>
@@ -116,6 +133,16 @@ try
 	app.UseAuthentication();
 	app.UseAuthorization();
 	app.MapControllers();
+	app.MapHealthChecks("/healthcheck", new HealthCheckOptions
+	{
+		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+	});
+
+	app.MapHealthChecksUI(options =>
+	{
+		options.UIPath = "/healthchecks-ui"; // HealthCheck UI path
+	});
+
 
 	Log.Information("Starting up the application");
 	app.Run();
