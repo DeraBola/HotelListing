@@ -25,7 +25,7 @@ namespace HotelListing.Controllers
 
 
 		// Gets all countries
-		[ResponseCache(CacheProfileName = "120secondsDuration")]
+		//[ResponseCache(CacheProfileName = "120secondsDuration")]
 		[HttpGet("all")]
 		public async Task<IActionResult> GetCountries()
 		{
@@ -33,6 +33,9 @@ namespace HotelListing.Controllers
 			{
 				var countries = await _unitOfWork.Countries.GetAllAsync();
 				var results = _mapper.Map<IList<CountryDTO>>(countries);
+				// Set response cache only if needed
+				// Response.Cache.SetCacheability(HttpCacheability.Public);
+				// Response.Cache.SetExpires(DateTime.UtcNow.AddSeconds(60));
 				return Ok(results);
 			}
 			catch (Exception ex)

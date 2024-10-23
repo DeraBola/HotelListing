@@ -23,7 +23,7 @@ try
 		.CreateLogger();
 
 	//builder.Services.AddAutoMapper(typeof(MapperInitializer));
-	builder.Services.AddResponseCaching();
+	//builder.Services.AddResponseCaching();
 	builder.Services.ConfigureHttpCacheHeaders();
 	builder.Services.AddMemoryCache();
 	// builder.Services.ConfigureRateLimiting();
