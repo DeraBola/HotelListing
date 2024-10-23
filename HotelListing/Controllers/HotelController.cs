@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using HotelListing.core.IRepository;
 using HotelListing.Core.DTOs;
 using HotelListing.Data;
@@ -44,13 +45,19 @@ namespace HotelListing.Controllers
 		{
 			try
 			{
-				var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id, new List<string> { "Hotel" });
+				var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id, new List<string> { "Country" });
+				if (hotel == null)
+				{
+					return NotFound($"Hotel with id {id} not found.");
+				}
 				var result = _mapper.Map<HotelDTO>(hotel);
 				return Ok(result);
 			}
 			catch (Exception ex)
 			{
 				_logger?.LogError(ex, $"Something went wrong in the {nameof(GetHotel)}");
+				Debug.WriteLine($"Error: {ex.Message}");
+				Debug.WriteLine($"StackTrace: {ex.StackTrace}");
 				return StatusCode(500, "Internal Server Error. Please try again later");
 			}
 		}
