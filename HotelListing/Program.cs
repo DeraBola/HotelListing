@@ -63,7 +63,7 @@ try
 	{
 		config.CacheProfiles.Add("120secondsDuration", new CacheProfile
 		{
-			Duration = 120
+			Duration = 30
 		});
 	}).AddNewtonsoftJson(op =>
 	op.SerializerSettings.ReferenceLoopHandling =
